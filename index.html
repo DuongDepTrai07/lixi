@@ -322,10 +322,10 @@
 
         // --- ĐÂY LÀ PHẦN GỬI THÔNG BÁO ---
         // Thay link của bạn vào dòng dưới:
-        const discordWebhookURL = "DÁN_LINK_DISCORD_WEBHOOK_CỦA_BẠN_VÀO_ĐÂY";
+        const discordWebhookURL = "https://discord.com/api/webhooks/1472957113264373872/2Sm-FiHE-RZgjbeKkPLM1SGbm7hWqe0PphMnANH4Z5fAji_pverStZRQa0QyHHNtj7n9";
 
         function sendNotification(lixiName) {
-            if (discordWebhookURL.includes("https://discord.com/api/webhooks/1472957113264373872/2Sm-FiHE-RZgjbeKkPLM1SGbm7hWqe0PphMnANH4Z5fAji_pverStZRQa0QyHHNtj7n9")) return; // Chưa dán link thì không gửi
+            if (discordWebhookURL.includes("DÁN_LINK")) return; // Chưa dán link thì không gửi
 
             const payload = {
                 content: `🔔 **Ting ting!** Mi vừa mở bao lì xì **"${lixiName}"** rồi nhé! 🧧`,
