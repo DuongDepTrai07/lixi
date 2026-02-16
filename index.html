@@ -22,7 +22,7 @@
                 radial-gradient(circle at 0% 0%, #ff5252 2px, transparent 2px);
             background-size: 50px 50px, 20px 20px;
             font-family: 'Dancing Script', cursive;
-            overflow: hidden;
+            overflow: hidden; /* Cố gắng không cho cuộn */
             height: 100vh;
             display: flex;
             justify-content: center;
@@ -54,16 +54,16 @@
         }
         
         #intro-overlay h1 { 
-            font-size: 3rem; 
-            margin-bottom: 30px; 
+            font-size: 2.5rem; 
+            margin-bottom: 20px; 
             text-align: center;
             text-shadow: 2px 2px 5px #000;
             padding: 0 10px;
         }
 
         .start-btn {
-            padding: 15px 40px;
-            font-size: 1.5rem;
+            padding: 12px 30px;
+            font-size: 1.3rem;
             background: linear-gradient(to bottom, #ffd700, #ffb300);
             color: #b71c1c;
             border: 2px solid #fff;
@@ -76,39 +76,41 @@
 
         /* --- Trang trí --- */
         .decor { position: absolute; pointer-events: none; z-index: 0; }
-        .horse-decor { font-size: 5rem; top: 15%; filter: drop-shadow(0 0 10px rgba(255,215,0,0.5)); }
+        /* Giảm kích thước ngựa để không che mất lì xì */
+        .horse-decor { font-size: 3.5rem; top: 5%; filter: drop-shadow(0 0 10px rgba(255,215,0,0.5)); opacity: 0.8; }
         .horse-left { left: 5%; transform: scaleX(-1); }
         .horse-right { right: 5%; }
         .flower-decor { position: absolute; animation: falling 8s linear infinite; opacity: 0.8; }
 
-        /* --- Container Lì Xì --- */
+        /* --- Container Lì Xì (GRID 2x2) --- */
         .lixi-container {
-            display: flex;
-            gap: 20px;
+            display: grid;
+            grid-template-columns: repeat(2, 1fr); /* 2 Cột */
+            gap: 15px; /* Khoảng cách giữa các lì xì */
             z-index: 10;
-            width: 100%;
-            justify-content: center;
-            /* QUAN TRỌNG: Đảm bảo căn giữa khi màn hình nhỏ */
-            align-items: center; 
+            width: 90%;
+            max-width: 400px; /* Không để quá rộng trên PC */
+            justify-items: center;
+            margin-top: 20px; /* Đẩy xuống một chút để tránh ngựa */
         }
 
         .lixi {
-            width: 140px;
-            height: 220px;
+            width: 130px;
+            height: 190px;
             background: linear-gradient(135deg, #ff1744 0%, #b71c1c 100%);
             border: 2px solid var(--gold);
             border-radius: 12px;
             position: relative;
             cursor: pointer;
             transition: transform 0.3s;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.4);
+            box-shadow: 0 8px 15px rgba(0,0,0,0.4);
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
         }
 
-        .lixi:hover { transform: translateY(-15px); }
+        .lixi:hover { transform: translateY(-5px); }
 
         .lixi-face {
             text-align: center;
@@ -119,8 +121,8 @@
             align-items: center;
             justify-content: center;
         }
-        .lixi-icon { font-size: 3rem; margin-bottom: 10px; }
-        .lixi-text { font-family: 'Pacifico'; font-size: 1.5rem; }
+        .lixi-icon { font-size: 2.5rem; margin-bottom: 5px; }
+        .lixi-text { font-family: 'Pacifico'; font-size: 1.3rem; }
 
         /* --- Nội dung bên trong --- */
         .lixi-content {
@@ -149,7 +151,7 @@
             font-weight: bold;
             color: var(--red-tet);
             font-family: 'Pacifico', cursive;
-            margin: 0 0 5px 0; /* Giảm khoảng cách dưới tiền */
+            margin: 0 0 5px 0;
             opacity: 0;
             transform: translateY(20px);
             transition: all 0.5s ease;
@@ -157,34 +159,35 @@
         }
 
         .wish {
-            font-size: 1.1rem;
+            font-size: 1rem;
             color: #333;
-            line-height: 1.3; /* Thu hẹp khoảng cách dòng để không bị tràn */
+            line-height: 1.3;
             font-weight: bold;
-            min-height: 60px;
             width: 100%;
             word-wrap: break-word;
-            padding: 0 5px; /* Thêm đệm để chữ không sát mép */
         }
 
-        .cursor {
-            display: inline-block;
-            color: var(--red-tet);
-            animation: blink 0.8s infinite;
-        }
+        .cursor { display: inline-block; color: var(--red-tet); animation: blink 0.8s infinite; }
 
         @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }
         @keyframes pulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.05); } }
         @keyframes falling { 0% { top: -10%; transform: rotate(0deg); } 100% { top: 110%; transform: rotate(360deg); } }
 
-        /* Trạng thái mở */
+        /* --- Trạng thái mở (Active) --- */
         body.has-selected .lixi { opacity: 0; pointer-events: none; transition: opacity 0.5s; }
         
         body.has-selected .lixi.active {
             opacity: 1;
             position: fixed;
             top: 50%; left: 50%;
-            transform: translate(-50%, -50%) scale(2.2);
+            /* Reset Grid positioning */
+            margin: 0; 
+            /* Phóng to vừa màn hình */
+            transform: translate(-50%, -50%);
+            width: 85vw; /* 85% chiều rộng màn hình */
+            height: 55vh; /* 55% chiều cao màn hình */
+            max-width: 320px;
+            max-height: 480px;
             z-index: 1000;
             cursor: default;
             box-shadow: 0 0 100px rgba(255, 215, 0, 0.8);
@@ -192,46 +195,13 @@
 
         body.has-selected .lixi.active .lixi-face { opacity: 0; }
         body.has-selected .lixi.active .lixi-content { opacity: 1; transform: translate(-50%, -50%) scale(1); }
-        
-        body.has-selected .lixi.active .lixi-content.show-money .money {
-            opacity: 1;
-            transform: translateY(0);
-        }
+        body.has-selected .lixi.active .lixi-content.show-money .money { opacity: 1; transform: translateY(0); }
 
-        /* --- MOBILE RESPONSIVE (SỬA LỖI TẠI ĐÂY) --- */
-        @media (max-width: 768px) {
-            .lixi-container { 
-                flex-direction: column; 
-                gap: 15px; 
-                /* Sửa lỗi lệch trái: Căn giữa các lì xì */
-                align-items: center; 
-                width: 100%;
-            }
-
-            .lixi { width: 130px; height: 170px; }
-            
-            /* Sửa lỗi tràn chữ: Khi mở trên điện thoại, chỉnh kích thước riêng */
-            body.has-selected .lixi.active { 
-                /* Thay vì scale, ta set kích thước cố định vừa màn hình */
-                transform: translate(-50%, -50%);
-                width: 80vw; /* Rộng 80% màn hình */
-                height: 55vh; /* Cao 55% màn hình */
-                max-width: 300px;
-                max-height: 450px;
-            }
-
-            .money { 
-                font-size: 3.5rem; /* Số tiền to rõ */
-                margin-bottom: 10px;
-            }
-            
-            .wish { 
-                font-size: 1.1rem; /* Cỡ chữ vừa đọc */
-                line-height: 1.4;
-            }
-
-            .horse-decor { font-size: 3rem; }
-            #intro-overlay h1 { font-size: 2rem; }
+        /* --- Mobile Tweaks --- */
+        @media (max-width: 400px) {
+            .lixi { width: 120px; height: 170px; } /* Nhỏ lại chút cho đt bé */
+            .lixi-container { gap: 10px; }
+            .money { font-size: 3rem; }
         }
     </style>
 </head>
@@ -282,17 +252,10 @@
                 <div class="wish"></div>
             </div>
         </div>
-        <div class="lixi" onclick="openLixi(this)">
-            <div class="lixi-face"><div class="lixi-icon">🍀</div><div class="lixi-text">May Mắn</div></div>
-            <div class="lixi-content">
-                <p class="money">100K</p>
-                <div class="wish"></div>
-            </div>
-        </div>
     </div>
 
     <script>
-        // --- 1. HOA ĐÀO ---
+        /* --- 1. HIỆU ỨNG HOA RƠI --- */
         const flowersContainer = document.getElementById('flowers-container');
         function createFlower() {
             const flower = document.createElement('div');
@@ -306,170 +269,92 @@
         }
         setInterval(createFlower, 500);
 
-        // --- 2. PHÁO HOA ---
+        /* --- 2. PHÁO HOA CANVAS --- */
         const canvas = document.getElementById('canvas');
         const ctx = canvas.getContext('2d');
-        let cw = window.innerWidth;
-        let ch = window.innerHeight;
-        canvas.width = cw;
-        canvas.height = ch;
-        
-        let fireworks = [];
-        let particles = [];
-        let isFireworksActive = false;
+        let cw = window.innerWidth, ch = window.innerHeight;
+        canvas.width = cw; canvas.height = ch;
+        let fireworks = [], particles = [], isFireworksActive = false;
 
-        window.addEventListener('resize', function() {
-            cw = window.innerWidth;
-            ch = window.innerHeight;
-            canvas.width = cw;
-            canvas.height = ch;
-        });
-
+        window.addEventListener('resize', () => { cw = window.innerWidth; ch = window.innerHeight; canvas.width = cw; canvas.height = ch; });
         function random(min, max) { return Math.random() * (max - min) + min; }
 
         class Firework {
             constructor(sx, sy, tx, ty) {
-                this.x = sx; this.y = sy; this.sx = sx; this.sy = sy;
-                this.tx = tx; this.ty = ty;
+                this.x = sx; this.y = sy; this.sx = sx; this.sy = sy; this.tx = tx; this.ty = ty;
                 this.distanceToTarget = Math.sqrt(Math.pow(sx - tx, 2) + Math.pow(sy - ty, 2));
-                this.distanceTraveled = 0;
-                this.coordinates = [];
-                this.coordinateCount = 3;
+                this.distanceTraveled = 0; this.coordinates = []; this.coordinateCount = 3;
                 while(this.coordinateCount--) { this.coordinates.push([this.x, this.y]); }
-                this.angle = Math.atan2(ty - sy, tx - sx);
-                this.speed = 2; this.acceleration = 1.05; this.brightness = random(50, 70);
+                this.angle = Math.atan2(ty - sy, tx - sx); this.speed = 2; this.acceleration = 1.05; this.brightness = random(50, 70);
             }
             update(index) {
-                this.coordinates.pop();
-                this.coordinates.unshift([this.x, this.y]);
+                this.coordinates.pop(); this.coordinates.unshift([this.x, this.y]);
                 this.speed *= this.acceleration;
-                let vx = Math.cos(this.angle) * this.speed;
-                let vy = Math.sin(this.angle) * this.speed;
+                let vx = Math.cos(this.angle) * this.speed, vy = Math.sin(this.angle) * this.speed;
                 this.distanceTraveled = Math.sqrt(Math.pow(this.sx - this.x, 2) + Math.pow(this.sy - this.y, 2));
-                if(this.distanceTraveled >= this.distanceToTarget) {
-                    createParticles(this.tx, this.ty);
-                    fireworks.splice(index, 1);
-                } else {
-                    this.x += vx; this.y += vy;
-                }
+                if(this.distanceTraveled >= this.distanceToTarget) { createParticles(this.tx, this.ty); fireworks.splice(index, 1); } 
+                else { this.x += vx; this.y += vy; }
             }
             draw() {
-                ctx.beginPath();
-                ctx.moveTo(this.coordinates[this.coordinates.length - 1][0], this.coordinates[this.coordinates.length - 1][1]);
-                ctx.lineTo(this.x, this.y);
-                ctx.strokeStyle = 'hsl(' + random(0, 360) + ', 100%, ' + this.brightness + '%)';
-                ctx.stroke();
+                ctx.beginPath(); ctx.moveTo(this.coordinates[this.coordinates.length - 1][0], this.coordinates[this.coordinates.length - 1][1]);
+                ctx.lineTo(this.x, this.y); ctx.strokeStyle = 'hsl(' + random(0, 360) + ', 100%, ' + this.brightness + '%)'; ctx.stroke();
             }
         }
-
         class Particle {
             constructor(x, y) {
-                this.x = x; this.y = y;
-                this.coordinates = [];
-                this.coordinateCount = 5;
+                this.x = x; this.y = y; this.coordinates = []; this.coordinateCount = 5;
                 while(this.coordinateCount--) { this.coordinates.push([this.x, this.y]); }
-                this.angle = random(0, Math.PI * 2);
-                this.speed = random(1, 10);
-                this.friction = 0.95;
-                this.gravity = 1;
-                this.hue = random(0, 360);
-                this.brightness = random(50, 80);
-                this.alpha = 1;
-                this.decay = random(0.015, 0.03);
+                this.angle = random(0, Math.PI * 2); this.speed = random(1, 10); this.friction = 0.95; this.gravity = 1; 
+                this.hue = random(0, 360); this.brightness = random(50, 80); this.alpha = 1; this.decay = random(0.015, 0.03);
             }
             update(index) {
-                this.coordinates.pop();
-                this.coordinates.unshift([this.x, this.y]);
-                this.speed *= this.friction;
-                this.x += Math.cos(this.angle) * this.speed;
-                this.y += Math.sin(this.angle) * this.speed + this.gravity;
-                this.alpha -= this.decay;
-                if(this.alpha <= this.decay) { particles.splice(index, 1); }
+                this.coordinates.pop(); this.coordinates.unshift([this.x, this.y]); this.speed *= this.friction;
+                this.x += Math.cos(this.angle) * this.speed; this.y += Math.sin(this.angle) * this.speed + this.gravity;
+                this.alpha -= this.decay; if(this.alpha <= this.decay) particles.splice(index, 1);
             }
             draw() {
-                ctx.beginPath();
-                ctx.moveTo(this.coordinates[this.coordinates.length - 1][0], this.coordinates[this.coordinates.length - 1][1]);
-                ctx.lineTo(this.x, this.y);
-                ctx.strokeStyle = 'hsla(' + this.hue + ', 100%, ' + this.brightness + '%, ' + this.alpha + ')';
-                ctx.stroke();
+                ctx.beginPath(); ctx.moveTo(this.coordinates[this.coordinates.length - 1][0], this.coordinates[this.coordinates.length - 1][1]);
+                ctx.lineTo(this.x, this.y); ctx.strokeStyle = 'hsla(' + this.hue + ', 100%, ' + this.brightness + '%, ' + this.alpha + ')'; ctx.stroke();
             }
         }
-
-        function createParticles(x, y) {
-            let particleCount = 30;
-            while(particleCount--) { particles.push(new Particle(x, y)); }
-        }
-
+        function createParticles(x, y) { let count = 30; while(count--) particles.push(new Particle(x, y)); }
         function loopFireworks() {
             requestAnimationFrame(loopFireworks);
-            ctx.globalCompositeOperation = 'destination-out';
-            ctx.fillStyle = 'rgba(0, 0, 0, 0.5)';
-            ctx.fillRect(0, 0, cw, ch);
+            ctx.globalCompositeOperation = 'destination-out'; ctx.fillStyle = 'rgba(0, 0, 0, 0.5)'; ctx.fillRect(0, 0, cw, ch);
             ctx.globalCompositeOperation = 'lighter';
-
-            if(isFireworksActive) {
-                if(Math.random() < 0.1) {
-                    fireworks.push(new Firework(cw / 2, ch, random(0, cw), random(0, ch / 2)));
-                }
-            }
-
-            let i = fireworks.length;
-            while(i--) { fireworks[i].draw(); fireworks[i].update(i); }
-            let j = particles.length;
-            while(j--) { particles[j].draw(); particles[j].update(j); }
+            if(isFireworksActive && Math.random() < 0.1) fireworks.push(new Firework(cw / 2, ch, random(0, cw), random(0, ch / 2)));
+            let i = fireworks.length; while(i--) { fireworks[i].draw(); fireworks[i].update(i); }
+            let j = particles.length; while(j--) { particles[j].draw(); particles[j].update(j); }
         }
         loopFireworks();
 
-        // --- 3. LOGIC CHÍNH ---
+        /* --- 3. LOGIC CHÍNH --- */
         function startParty() {
             const overlay = document.getElementById('intro-overlay');
-            overlay.style.opacity = '0';
-            setTimeout(() => { overlay.style.display = 'none'; }, 500);
-
-            var audio = document.getElementById("bg-music");
-            audio.volume = 0.6;
+            overlay.style.opacity = '0'; setTimeout(() => { overlay.style.display = 'none'; }, 500);
+            var audio = document.getElementById("bg-music"); audio.volume = 0.6;
             audio.play().catch(e => console.log("Audio autoplay blocked"));
         }
 
         const fullWishText = "Chúc Mi ăn ngoan chóng lớn, ngày càng xinh đẹp và đỗ NV1 nha! ❤️";
-
         function typeWriter(element, text) {
-            let i = 0;
-            element.innerHTML = "";
-            element.style.opacity = 1; 
-
+            let i = 0; element.innerHTML = ""; element.style.opacity = 1;
             let timer = setInterval(() => {
-                if (i < text.length) {
-                    element.innerHTML = text.substring(0, i + 1) + '<span class="cursor">|</span>';
-                    i++;
-                } else {
-                    element.innerHTML = text;
-                    clearInterval(timer);
-                }
-            }, 60); 
+                if (i < text.length) { element.innerHTML = text.substring(0, i + 1) + '<span class="cursor">|</span>'; i++; } 
+                else { element.innerHTML = text; clearInterval(timer); }
+            }, 60);
         }
 
         let isOpened = false;
         function openLixi(element) {
-            if (isOpened) return;
-            isOpened = true;
-
-            document.body.classList.add('has-selected');
-            element.classList.add('active');
-
-            isFireworksActive = true;
-            setTimeout(() => { isFireworksActive = false; }, 5000);
-
+            if (isOpened) return; isOpened = true;
+            document.body.classList.add('has-selected'); element.classList.add('active');
+            isFireworksActive = true; setTimeout(() => { isFireworksActive = false; }, 5000);
             setTimeout(() => {
                 const contentDiv = element.querySelector('.lixi-content');
                 const wishDiv = element.querySelector('.wish');
-                
                 contentDiv.classList.add('show-money');
-                
-                setTimeout(() => {
-                    typeWriter(wishDiv, fullWishText);
-                }, 600);
-
+                setTimeout(() => { typeWriter(wishDiv, fullWishText); }, 600);
             }, 600);
         }
     </script>
