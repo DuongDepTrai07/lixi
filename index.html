@@ -1,0 +1,456 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lì Xì Tết Cho Mi 2026</title>
+    <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@700&family=Pacifico&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --red-tet: #b71c1c;
+            --cream-paper: #fff8e1;
+            --gold: #ffd700;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: var(--red-tet);
+            background-image: 
+                radial-gradient(circle at 50% 50%, #d32f2f 10%, transparent 10%),
+                radial-gradient(circle at 0% 0%, #ff5252 2px, transparent 2px);
+            background-size: 50px 50px, 20px 20px;
+            font-family: 'Dancing Script', cursive;
+            overflow: hidden;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+        }
+
+        /* --- Canvas Pháo Hoa --- */
+        #canvas {
+            position: absolute;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            pointer-events: none;
+            z-index: 5;
+        }
+
+        /* --- Màn hình Chào --- */
+        #intro-overlay {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(139, 0, 0, 0.98);
+            z-index: 2000;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            color: var(--gold);
+            transition: opacity 0.5s ease;
+        }
+        
+        #intro-overlay h1 { 
+            font-size: 3rem; 
+            margin-bottom: 30px; 
+            text-align: center;
+            text-shadow: 2px 2px 5px #000;
+        }
+
+        .start-btn {
+            padding: 15px 40px;
+            font-size: 1.5rem;
+            background: linear-gradient(to bottom, #ffd700, #ffb300);
+            color: #b71c1c;
+            border: 2px solid #fff;
+            border-radius: 50px;
+            cursor: pointer;
+            font-family: 'Pacifico', cursive;
+            box-shadow: 0 0 20px rgba(255, 215, 0, 0.6);
+            animation: pulse 1.5s infinite;
+        }
+
+        /* --- Trang trí --- */
+        .decor { position: absolute; pointer-events: none; z-index: 0; }
+        .horse-decor { font-size: 5rem; top: 15%; filter: drop-shadow(0 0 10px rgba(255,215,0,0.5)); }
+        .horse-left { left: 5%; transform: scaleX(-1); }
+        .horse-right { right: 5%; }
+        .flower-decor { position: absolute; animation: falling 8s linear infinite; opacity: 0.8; }
+
+        /* --- Container Lì Xì --- */
+        .lixi-container {
+            display: flex;
+            gap: 20px;
+            z-index: 10;
+            width: 100%;
+            justify-content: center;
+        }
+
+        .lixi {
+            width: 140px;
+            height: 220px;
+            background: linear-gradient(135deg, #ff1744 0%, #b71c1c 100%);
+            border: 2px solid var(--gold);
+            border-radius: 12px;
+            position: relative;
+            cursor: pointer;
+            transition: transform 0.3s;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.4);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .lixi:hover { transform: translateY(-15px); }
+
+        .lixi-face {
+            text-align: center;
+            color: var(--gold);
+            width: 100%; height: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+        .lixi-icon { font-size: 3rem; margin-bottom: 10px; }
+        .lixi-text { font-family: 'Pacifico'; font-size: 1.5rem; }
+
+        /* --- Nội dung bên trong (Đã chỉnh sửa để không mất chữ) --- */
+        .lixi-content {
+            position: absolute;
+            top: 50%; left: 50%;
+            transform: translate(-50%, -50%) scale(0);
+            width: 90%; 
+            height: 90%;
+            background: var(--cream-paper);
+            border-radius: 8px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 10px;
+            box-sizing: border-box;
+            border: 2px solid var(--red-tet);
+            opacity: 0;
+            transition: all 0.5s ease;
+            z-index: 200;
+            /* Quan trọng: Cho phép hiện chữ nếu dài quá */
+            overflow: visible; 
+        }
+
+        .money {
+            font-size: 2.2rem;
+            font-weight: bold;
+            color: var(--red-tet);
+            font-family: 'Pacifico', cursive;
+            margin: 0 0 10px 0;
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all 0.5s ease;
+        }
+
+        .wish {
+            font-size: 1rem; /* Cỡ chữ vừa phải */
+            color: #333;
+            line-height: 1.4;
+            font-weight: bold;
+            min-height: 60px;
+            width: 100%;
+            word-wrap: break-word; /* Tự xuống dòng */
+        }
+
+        /* Con trỏ nhấp nháy */
+        .cursor {
+            display: inline-block;
+            color: var(--red-tet);
+            animation: blink 0.8s infinite;
+        }
+
+        /* --- Animation --- */
+        @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }
+        @keyframes pulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.05); } }
+        @keyframes falling { 0% { top: -10%; transform: rotate(0deg); } 100% { top: 110%; transform: rotate(360deg); } }
+
+        /* Trạng thái mở */
+        body.has-selected .lixi { opacity: 0; pointer-events: none; transition: opacity 0.5s; }
+        
+        body.has-selected .lixi.active {
+            opacity: 1;
+            position: fixed;
+            top: 50%; left: 50%;
+            transform: translate(-50%, -50%) scale(2.2);
+            z-index: 1000;
+            cursor: default;
+            box-shadow: 0 0 100px rgba(255, 215, 0, 0.8);
+        }
+
+        body.has-selected .lixi.active .lixi-face { opacity: 0; }
+        body.has-selected .lixi.active .lixi-content { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+        
+        body.has-selected .lixi.active .lixi-content.show-money .money {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* Mobile Responsive */
+        @media (max-width: 768px) {
+            .lixi-container { flex-direction: column; gap: 10px; }
+            .lixi { width: 130px; height: 170px; }
+            body.has-selected .lixi.active { transform: translate(-50%, -50%) scale(1.8); }
+            .horse-decor { font-size: 3rem; }
+            .money { font-size: 2rem; }
+            .wish { font-size: 0.9rem; }
+        }
+    </style>
+</head>
+<body>
+
+    <canvas id="canvas"></canvas>
+
+    <audio id="bg-music" loop>
+        <source src="nhac-tet.mp3" type="audio/mpeg">
+        <source src="https://data.chiasenhac.com/down2/2274/4/2273636-22a4a796/128/Nhu%20Hoa%20Mua%20Xuan%20-%20Ho%20Ngoc%20Ha_%20Thuy.mp3" type="audio/mpeg">
+    </audio>
+
+    <div id="intro-overlay">
+        <h1>🌸 Chúc Mừng Năm Mới 2026 🌸</h1>
+        <button class="start-btn" onclick="startParty()">Nhận lì xì ngay</button>
+    </div>
+
+    <div class="decor horse-decor horse-left">🐎</div>
+    <div class="decor horse-decor horse-right">🐎</div>
+    <div id="flowers-container"></div>
+
+    <div class="lixi-container">
+        <div class="lixi" onclick="openLixi(this)">
+            <div class="lixi-face"><div class="lixi-icon">🐎</div><div class="lixi-text">Mã Đáo</div></div>
+            <div class="lixi-content">
+                <p class="money">100K</p>
+                <div class="wish"></div>
+            </div>
+        </div>
+        <div class="lixi" onclick="openLixi(this)">
+            <div class="lixi-face"><div class="lixi-icon">🌸</div><div class="lixi-text">Hạnh Phúc</div></div>
+            <div class="lixi-content">
+                <p class="money">100K</p>
+                <div class="wish"></div>
+            </div>
+        </div>
+        <div class="lixi" onclick="openLixi(this)">
+            <div class="lixi-face"><div class="lixi-icon">🧨</div><div class="lixi-text">Tài Lộc</div></div>
+            <div class="lixi-content">
+                <p class="money">100K</p>
+                <div class="wish"></div>
+            </div>
+        </div>
+        <div class="lixi" onclick="openLixi(this)">
+            <div class="lixi-face"><div class="lixi-icon">🧧</div><div class="lixi-text">Bình An</div></div>
+            <div class="lixi-content">
+                <p class="money">100K</p>
+                <div class="wish"></div>
+            </div>
+        </div>
+        <div class="lixi" onclick="openLixi(this)">
+            <div class="lixi-face"><div class="lixi-icon">🍀</div><div class="lixi-text">May Mắn</div></div>
+            <div class="lixi-content">
+                <p class="money">100K</p>
+                <div class="wish"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // --- 1. HIỆU ỨNG HOA ĐÀO RƠI ---
+        const flowersContainer = document.getElementById('flowers-container');
+        function createFlower() {
+            const flower = document.createElement('div');
+            flower.classList.add('flower-decor');
+            flower.innerHTML = '🌸';
+            flower.style.left = Math.random() * 100 + 'vw';
+            flower.style.animationDuration = Math.random() * 3 + 5 + 's';
+            flower.style.fontSize = Math.random() * 1 + 1 + 'rem';
+            flowersContainer.appendChild(flower);
+            setTimeout(() => flower.remove(), 8000);
+        }
+        setInterval(createFlower, 500);
+
+        // --- 2. PHÁO HOA CANVAS (BẮN LÊN) ---
+        const canvas = document.getElementById('canvas');
+        const ctx = canvas.getContext('2d');
+        let cw = window.innerWidth;
+        let ch = window.innerHeight;
+        canvas.width = cw;
+        canvas.height = ch;
+        
+        let fireworks = [];
+        let particles = [];
+        let isFireworksActive = false;
+
+        window.addEventListener('resize', function() {
+            cw = window.innerWidth;
+            ch = window.innerHeight;
+            canvas.width = cw;
+            canvas.height = ch;
+        });
+
+        function random(min, max) { return Math.random() * (max - min) + min; }
+
+        class Firework {
+            constructor(sx, sy, tx, ty) {
+                this.x = sx; this.y = sy; this.sx = sx; this.sy = sy;
+                this.tx = tx; this.ty = ty;
+                this.distanceToTarget = Math.sqrt(Math.pow(sx - tx, 2) + Math.pow(sy - ty, 2));
+                this.distanceTraveled = 0;
+                this.coordinates = [];
+                this.coordinateCount = 3;
+                while(this.coordinateCount--) { this.coordinates.push([this.x, this.y]); }
+                this.angle = Math.atan2(ty - sy, tx - sx);
+                this.speed = 2; this.acceleration = 1.05; this.brightness = random(50, 70);
+            }
+            update(index) {
+                this.coordinates.pop();
+                this.coordinates.unshift([this.x, this.y]);
+                this.speed *= this.acceleration;
+                let vx = Math.cos(this.angle) * this.speed;
+                let vy = Math.sin(this.angle) * this.speed;
+                this.distanceTraveled = Math.sqrt(Math.pow(this.sx - this.x, 2) + Math.pow(this.sy - this.y, 2));
+                if(this.distanceTraveled >= this.distanceToTarget) {
+                    createParticles(this.tx, this.ty);
+                    fireworks.splice(index, 1);
+                } else {
+                    this.x += vx; this.y += vy;
+                }
+            }
+            draw() {
+                ctx.beginPath();
+                ctx.moveTo(this.coordinates[this.coordinates.length - 1][0], this.coordinates[this.coordinates.length - 1][1]);
+                ctx.lineTo(this.x, this.y);
+                ctx.strokeStyle = 'hsl(' + random(0, 360) + ', 100%, ' + this.brightness + '%)';
+                ctx.stroke();
+            }
+        }
+
+        class Particle {
+            constructor(x, y) {
+                this.x = x; this.y = y;
+                this.coordinates = [];
+                this.coordinateCount = 5;
+                while(this.coordinateCount--) { this.coordinates.push([this.x, this.y]); }
+                this.angle = random(0, Math.PI * 2);
+                this.speed = random(1, 10);
+                this.friction = 0.95;
+                this.gravity = 1;
+                this.hue = random(0, 360);
+                this.brightness = random(50, 80);
+                this.alpha = 1;
+                this.decay = random(0.015, 0.03);
+            }
+            update(index) {
+                this.coordinates.pop();
+                this.coordinates.unshift([this.x, this.y]);
+                this.speed *= this.friction;
+                this.x += Math.cos(this.angle) * this.speed;
+                this.y += Math.sin(this.angle) * this.speed + this.gravity;
+                this.alpha -= this.decay;
+                if(this.alpha <= this.decay) { particles.splice(index, 1); }
+            }
+            draw() {
+                ctx.beginPath();
+                ctx.moveTo(this.coordinates[this.coordinates.length - 1][0], this.coordinates[this.coordinates.length - 1][1]);
+                ctx.lineTo(this.x, this.y);
+                ctx.strokeStyle = 'hsla(' + this.hue + ', 100%, ' + this.brightness + '%, ' + this.alpha + ')';
+                ctx.stroke();
+            }
+        }
+
+        function createParticles(x, y) {
+            let particleCount = 30;
+            while(particleCount--) { particles.push(new Particle(x, y)); }
+        }
+
+        function loopFireworks() {
+            requestAnimationFrame(loopFireworks);
+            ctx.globalCompositeOperation = 'destination-out';
+            ctx.fillStyle = 'rgba(0, 0, 0, 0.5)';
+            ctx.fillRect(0, 0, cw, ch);
+            ctx.globalCompositeOperation = 'lighter';
+
+            if(isFireworksActive) {
+                if(Math.random() < 0.1) {
+                    fireworks.push(new Firework(cw / 2, ch, random(0, cw), random(0, ch / 2)));
+                }
+            }
+
+            let i = fireworks.length;
+            while(i--) { fireworks[i].draw(); fireworks[i].update(i); }
+            let j = particles.length;
+            while(j--) { particles[j].draw(); particles[j].update(j); }
+        }
+        loopFireworks();
+
+        // --- 3. LOGIC CHÍNH ---
+        function startParty() {
+            const overlay = document.getElementById('intro-overlay');
+            overlay.style.opacity = '0';
+            setTimeout(() => { overlay.style.display = 'none'; }, 500);
+
+            var audio = document.getElementById("bg-music");
+            audio.volume = 0.6;
+            audio.play().catch(e => console.log("Audio autoplay blocked"));
+        }
+
+        const fullWishText = "Chúc Mi ăn ngoan chóng lớn, ngày càng xinh đẹp và đỗ NV1 nha! ❤️";
+
+        // Hàm gõ chữ mới (Fix lỗi mất chữ)
+        function typeWriter(element, text) {
+            let i = 0;
+            element.innerHTML = "";
+            element.style.opacity = 1; // Đảm bảo chữ hiện
+
+            let timer = setInterval(() => {
+                if (i < text.length) {
+                    // Thêm từng ký tự
+                    element.innerHTML = text.substring(0, i + 1) + '<span class="cursor">|</span>';
+                    i++;
+                } else {
+                    // Hoàn thành
+                    element.innerHTML = text;
+                    clearInterval(timer);
+                }
+            }, 60); // Tốc độ 60ms/ký tự
+        }
+
+        let isOpened = false;
+        function openLixi(element) {
+            if (isOpened) return;
+            isOpened = true;
+
+            document.body.classList.add('has-selected');
+            element.classList.add('active');
+
+            // Bắn pháo hoa 5 giây
+            isFireworksActive = true;
+            setTimeout(() => { isFireworksActive = false; }, 5000);
+
+            // Xử lý hiện nội dung
+            setTimeout(() => {
+                const contentDiv = element.querySelector('.lixi-content');
+                const wishDiv = element.querySelector('.wish');
+                
+                contentDiv.classList.add('show-money');
+                
+                // Đợi tiền hiện xong rồi mới gõ chữ
+                setTimeout(() => {
+                    typeWriter(wishDiv, fullWishText);
+                }, 600);
+
+            }, 600);
+        }
+    </script>
+</body>
+</html>
