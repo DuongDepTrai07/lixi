@@ -80,11 +80,11 @@
         .horse-right { right: 5%; }
         .flower-decor { position: absolute; animation: falling 8s linear infinite; opacity: 0.8; }
 
-        /* --- Container Lì Xì (GRID 2x2) --- */
+        /* --- Container Lì Xì (GRID 2x2 - CHÍNH XÁC LÀ 4 CÁI) --- */
         .lixi-container {
             display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 20px;
+            grid-template-columns: repeat(2, 1fr); /* 2 Cột */
+            gap: 20px; /* Khoảng cách */
             z-index: 10;
             width: auto;
             max-width: 90%;
@@ -199,6 +199,7 @@
 </head>
 <body>
     <canvas id="canvas"></canvas>
+    
     <audio id="bg-music" loop>
         <source src="nhac-tet.mp3" type="audio/mpeg">
         <source src="https://data.chiasenhac.com/down2/2274/4/2273636-22a4a796/128/Nhu%20Hoa%20Mua%20Xuan%20-%20Ho%20Ngoc%20Ha_%20Thuy.mp3" type="audio/mpeg">
@@ -320,30 +321,36 @@
             }, 60);
         }
 
-        // --- ĐÂY LÀ PHẦN GỬI THÔNG BÁO ---
-        // Thay link của bạn vào dòng dưới:
+        // --- ĐÂY LÀ PHẦN GỬI THÔNG BÁO DISCORD (ĐÃ FIX) ---
         const discordWebhookURL = "https://discord.com/api/webhooks/1472957113264373872/2Sm-FiHE-RZgjbeKkPLM1SGbm7hWqe0PphMnANH4Z5fAji_pverStZRQa0QyHHNtj7n9";
 
         function sendNotification(lixiName) {
-            if (discordWebhookURL.includes("DÁN_LINK")) return; // Chưa dán link thì không gửi
-
+            // Chuẩn bị nội dung
             const payload = {
                 content: `🔔 **Ting ting!** Mi vừa mở bao lì xì **"${lixiName}"** rồi nhé! 🧧`,
                 username: "Thần Tài Báo Tin"
             };
 
-            fetch(discordWebhookURL, {
+            // Dùng PROXY để vượt qua lỗi chặn của trình duyệt
+            const proxyUrl = "https://corsproxy.io/?" + encodeURIComponent(discordWebhookURL);
+
+            fetch(proxyUrl, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(payload)
-            }).then(response => console.log("Đã báo tin!")).catch(err => console.error("Lỗi gửi tin"));
+            })
+            .then(response => {
+                if(response.ok) console.log("Gửi tin nhắn thành công!");
+                else console.log("Gửi thất bại, mã lỗi:", response.status);
+            })
+            .catch(err => console.error("Lỗi kết nối:", err));
         }
 
         let isOpened = false;
         function openLixi(element, name) {
             if (isOpened) return; isOpened = true;
             
-            // Gửi thông báo ngay khi bấm
+            // Gửi thông báo ngay
             sendNotification(name);
 
             document.body.classList.add('has-selected'); element.classList.add('active');
