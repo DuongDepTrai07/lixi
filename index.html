@@ -80,11 +80,11 @@
         .horse-right { right: 5%; }
         .flower-decor { position: absolute; animation: falling 8s linear infinite; opacity: 0.8; }
 
-        /* --- Container Lì Xì (GRID 2x2 - CHÍNH XÁC LÀ 4 CÁI) --- */
+        /* --- Container Lì Xì (GRID 2x2) --- */
         .lixi-container {
             display: grid;
-            grid-template-columns: repeat(2, 1fr); /* 2 Cột */
-            gap: 20px; /* Khoảng cách */
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
             z-index: 10;
             width: auto;
             max-width: 90%;
@@ -214,19 +214,19 @@
     <div id="flowers-container"></div>
 
     <div class="lixi-container">
-        <div class="lixi" onclick="openLixi(this)">
+        <div class="lixi" onclick="openLixi(this, 'Mã Đáo')">
             <div class="lixi-face"><div class="lixi-icon">🐎</div><div class="lixi-text">Mã Đáo</div></div>
             <div class="lixi-content"><p class="money">100K</p><div class="wish"></div></div>
         </div>
-        <div class="lixi" onclick="openLixi(this)">
+        <div class="lixi" onclick="openLixi(this, 'Hạnh Phúc')">
             <div class="lixi-face"><div class="lixi-icon">🌸</div><div class="lixi-text">Hạnh Phúc</div></div>
             <div class="lixi-content"><p class="money">100K</p><div class="wish"></div></div>
         </div>
-        <div class="lixi" onclick="openLixi(this)">
+        <div class="lixi" onclick="openLixi(this, 'Tài Lộc')">
             <div class="lixi-face"><div class="lixi-icon">🧨</div><div class="lixi-text">Tài Lộc</div></div>
             <div class="lixi-content"><p class="money">100K</p><div class="wish"></div></div>
         </div>
-        <div class="lixi" onclick="openLixi(this)">
+        <div class="lixi" onclick="openLixi(this, 'Bình An')">
             <div class="lixi-face"><div class="lixi-icon">🧧</div><div class="lixi-text">Bình An</div></div>
             <div class="lixi-content"><p class="money">100K</p><div class="wish"></div></div>
         </div>
@@ -320,9 +320,32 @@
             }, 60);
         }
 
+        // --- ĐÂY LÀ PHẦN GỬI THÔNG BÁO ---
+        // Thay link của bạn vào dòng dưới:
+        const discordWebhookURL = "DÁN_LINK_DISCORD_WEBHOOK_CỦA_BẠN_VÀO_ĐÂY";
+
+        function sendNotification(lixiName) {
+            if (discordWebhookURL.includes("https://discord.com/api/webhooks/1472957113264373872/2Sm-FiHE-RZgjbeKkPLM1SGbm7hWqe0PphMnANH4Z5fAji_pverStZRQa0QyHHNtj7n9")) return; // Chưa dán link thì không gửi
+
+            const payload = {
+                content: `🔔 **Ting ting!** Mi vừa mở bao lì xì **"${lixiName}"** rồi nhé! 🧧`,
+                username: "Thần Tài Báo Tin"
+            };
+
+            fetch(discordWebhookURL, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            }).then(response => console.log("Đã báo tin!")).catch(err => console.error("Lỗi gửi tin"));
+        }
+
         let isOpened = false;
-        function openLixi(element) {
+        function openLixi(element, name) {
             if (isOpened) return; isOpened = true;
+            
+            // Gửi thông báo ngay khi bấm
+            sendNotification(name);
+
             document.body.classList.add('has-selected'); element.classList.add('active');
             isFireworksActive = true; setTimeout(() => { isFireworksActive = false; }, 5000);
             setTimeout(() => {
