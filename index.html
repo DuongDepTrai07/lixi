@@ -6,6 +6,8 @@
     <title>Lì Xì Tết Cho Mi 2026</title>
     <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@700&family=Pacifico&display=swap" rel="stylesheet">
     
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
+
     <style>
         :root {
             --red-tet: #b71c1c;
@@ -80,11 +82,11 @@
         .horse-right { right: 5%; }
         .flower-decor { position: absolute; animation: falling 8s linear infinite; opacity: 0.8; }
 
-        /* --- Container Lì Xì (GRID 2x2 - CHÍNH XÁC LÀ 4 CÁI) --- */
+        /* --- Container Lì Xì (GRID 2x2) --- */
         .lixi-container {
             display: grid;
-            grid-template-columns: repeat(2, 1fr); /* 2 Cột */
-            gap: 20px; /* Khoảng cách */
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
             z-index: 10;
             width: auto;
             max-width: 90%;
@@ -321,37 +323,44 @@
             }, 60);
         }
 
-        // --- ĐÂY LÀ PHẦN GỬI THÔNG BÁO DISCORD (ĐÃ FIX) ---
-        const discordWebhookURL = "https://discord.com/api/webhooks/1472957113264373872/2Sm-FiHE-RZgjbeKkPLM1SGbm7hWqe0PphMnANH4Z5fAji_pverStZRQa0QyHHNtj7n9";
+        // --- CẤU HÌNH EMAILJS ---
+        // BẠN HÃY THAY 3 DÒNG DƯỚI BẰNG THÔNG TIN LẤY TRÊN EMAILJS.COM
+        const PUBLIC_KEY = "evaOeDQQxQ9LLBHbZ"; // Ví dụ: user_Kj28...
+        const SERVICE_ID = "service_a18yiyn"; // Ví dụ: service_xf34...
+        const TEMPLATE_ID = "template_7s4zy4i"; // Ví dụ: template_8a2...
 
-        function sendNotification(lixiName) {
-            // Chuẩn bị nội dung
-            const payload = {
-                content: `🔔 **Ting ting!** Mi vừa mở bao lì xì **"${lixiName}"** rồi nhé! 🧧`,
-                username: "Thần Tài Báo Tin"
+        // Khởi tạo EmailJS
+        (function(){
+            emailjs.init(PUBLIC_KEY);
+        })();
+
+        function sendEmailNotification(lixiName) {
+            // Kiểm tra xem đã điền Key chưa
+            if (PUBLIC_KEY.includes("DÁN_PUBLIC_KEY")) {
+                console.log("Chưa điền thông tin EmailJS!");
+                return;
+            }
+
+            var templateParams = {
+                lixi_name: lixiName,
+                to_name: "Bạn Dương", // Tên người nhận
+                message: "Mi đã mở bao lì xì rồi nha!"
             };
 
-            // Dùng PROXY để vượt qua lỗi chặn của trình duyệt
-            const proxyUrl = "https://corsproxy.io/?" + encodeURIComponent(discordWebhookURL);
-
-            fetch(proxyUrl, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(payload)
-            })
-            .then(response => {
-                if(response.ok) console.log("Gửi tin nhắn thành công!");
-                else console.log("Gửi thất bại, mã lỗi:", response.status);
-            })
-            .catch(err => console.error("Lỗi kết nối:", err));
+            emailjs.send(SERVICE_ID, TEMPLATE_ID, templateParams)
+                .then(function(response) {
+                    console.log('Đã gửi email thành công!', response.status, response.text);
+                }, function(error) {
+                    console.log('Gửi email thất bại...', error);
+                });
         }
 
         let isOpened = false;
         function openLixi(element, name) {
             if (isOpened) return; isOpened = true;
             
-            // Gửi thông báo ngay
-            sendNotification(name);
+            // Gửi thông báo qua Email
+            sendEmailNotification(name);
 
             document.body.classList.add('has-selected'); element.classList.add('active');
             isFireworksActive = true; setTimeout(() => { isFireworksActive = false; }, 5000);
