@@ -58,6 +58,7 @@
             margin-bottom: 30px; 
             text-align: center;
             text-shadow: 2px 2px 5px #000;
+            padding: 0 10px;
         }
 
         .start-btn {
@@ -87,6 +88,8 @@
             z-index: 10;
             width: 100%;
             justify-content: center;
+            /* QUAN TRỌNG: Đảm bảo căn giữa khi màn hình nhỏ */
+            align-items: center; 
         }
 
         .lixi {
@@ -119,7 +122,7 @@
         .lixi-icon { font-size: 3rem; margin-bottom: 10px; }
         .lixi-text { font-family: 'Pacifico'; font-size: 1.5rem; }
 
-        /* --- Nội dung bên trong (Đã chỉnh sửa để không mất chữ) --- */
+        /* --- Nội dung bên trong --- */
         .lixi-content {
             position: absolute;
             top: 50%; left: 50%;
@@ -139,8 +142,6 @@
             opacity: 0;
             transition: all 0.5s ease;
             z-index: 200;
-            /* Quan trọng: Cho phép hiện chữ nếu dài quá */
-            overflow: visible; 
         }
 
         .money {
@@ -148,30 +149,30 @@
             font-weight: bold;
             color: var(--red-tet);
             font-family: 'Pacifico', cursive;
-            margin: 0 0 10px 0;
+            margin: 0 0 5px 0; /* Giảm khoảng cách dưới tiền */
             opacity: 0;
             transform: translateY(20px);
             transition: all 0.5s ease;
+            line-height: 1.2;
         }
 
         .wish {
-            font-size: 1rem; /* Cỡ chữ vừa phải */
+            font-size: 1.1rem;
             color: #333;
-            line-height: 1.4;
+            line-height: 1.3; /* Thu hẹp khoảng cách dòng để không bị tràn */
             font-weight: bold;
             min-height: 60px;
             width: 100%;
-            word-wrap: break-word; /* Tự xuống dòng */
+            word-wrap: break-word;
+            padding: 0 5px; /* Thêm đệm để chữ không sát mép */
         }
 
-        /* Con trỏ nhấp nháy */
         .cursor {
             display: inline-block;
             color: var(--red-tet);
             animation: blink 0.8s infinite;
         }
 
-        /* --- Animation --- */
         @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }
         @keyframes pulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.05); } }
         @keyframes falling { 0% { top: -10%; transform: rotate(0deg); } 100% { top: 110%; transform: rotate(360deg); } }
@@ -197,14 +198,40 @@
             transform: translateY(0);
         }
 
-        /* Mobile Responsive */
+        /* --- MOBILE RESPONSIVE (SỬA LỖI TẠI ĐÂY) --- */
         @media (max-width: 768px) {
-            .lixi-container { flex-direction: column; gap: 10px; }
+            .lixi-container { 
+                flex-direction: column; 
+                gap: 15px; 
+                /* Sửa lỗi lệch trái: Căn giữa các lì xì */
+                align-items: center; 
+                width: 100%;
+            }
+
             .lixi { width: 130px; height: 170px; }
-            body.has-selected .lixi.active { transform: translate(-50%, -50%) scale(1.8); }
+            
+            /* Sửa lỗi tràn chữ: Khi mở trên điện thoại, chỉnh kích thước riêng */
+            body.has-selected .lixi.active { 
+                /* Thay vì scale, ta set kích thước cố định vừa màn hình */
+                transform: translate(-50%, -50%);
+                width: 80vw; /* Rộng 80% màn hình */
+                height: 55vh; /* Cao 55% màn hình */
+                max-width: 300px;
+                max-height: 450px;
+            }
+
+            .money { 
+                font-size: 3.5rem; /* Số tiền to rõ */
+                margin-bottom: 10px;
+            }
+            
+            .wish { 
+                font-size: 1.1rem; /* Cỡ chữ vừa đọc */
+                line-height: 1.4;
+            }
+
             .horse-decor { font-size: 3rem; }
-            .money { font-size: 2rem; }
-            .wish { font-size: 0.9rem; }
+            #intro-overlay h1 { font-size: 2rem; }
         }
     </style>
 </head>
@@ -265,7 +292,7 @@
     </div>
 
     <script>
-        // --- 1. HIỆU ỨNG HOA ĐÀO RƠI ---
+        // --- 1. HOA ĐÀO ---
         const flowersContainer = document.getElementById('flowers-container');
         function createFlower() {
             const flower = document.createElement('div');
@@ -279,7 +306,7 @@
         }
         setInterval(createFlower, 500);
 
-        // --- 2. PHÁO HOA CANVAS (BẮN LÊN) ---
+        // --- 2. PHÁO HOA ---
         const canvas = document.getElementById('canvas');
         const ctx = canvas.getContext('2d');
         let cw = window.innerWidth;
@@ -406,23 +433,20 @@
 
         const fullWishText = "Chúc Mi ăn ngoan chóng lớn, ngày càng xinh đẹp và đỗ NV1 nha! ❤️";
 
-        // Hàm gõ chữ mới (Fix lỗi mất chữ)
         function typeWriter(element, text) {
             let i = 0;
             element.innerHTML = "";
-            element.style.opacity = 1; // Đảm bảo chữ hiện
+            element.style.opacity = 1; 
 
             let timer = setInterval(() => {
                 if (i < text.length) {
-                    // Thêm từng ký tự
                     element.innerHTML = text.substring(0, i + 1) + '<span class="cursor">|</span>';
                     i++;
                 } else {
-                    // Hoàn thành
                     element.innerHTML = text;
                     clearInterval(timer);
                 }
-            }, 60); // Tốc độ 60ms/ký tự
+            }, 60); 
         }
 
         let isOpened = false;
@@ -433,18 +457,15 @@
             document.body.classList.add('has-selected');
             element.classList.add('active');
 
-            // Bắn pháo hoa 5 giây
             isFireworksActive = true;
             setTimeout(() => { isFireworksActive = false; }, 5000);
 
-            // Xử lý hiện nội dung
             setTimeout(() => {
                 const contentDiv = element.querySelector('.lixi-content');
                 const wishDiv = element.querySelector('.wish');
                 
                 contentDiv.classList.add('show-money');
                 
-                // Đợi tiền hiện xong rồi mới gõ chữ
                 setTimeout(() => {
                     typeWriter(wishDiv, fullWishText);
                 }, 600);
